@@ -1,5 +1,4 @@
 #include "Platform/Platform.hpp"
-
 class Game
 {
 public:
