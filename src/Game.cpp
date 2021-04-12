@@ -2,11 +2,15 @@
 
 Game::Game() :
 	gameWindow(sf::VideoMode(800, 800), "Asteroids!"),
-	playerShape()
+	texture(),
+	playerSprite()
 {
-	playerShape.setRadius(40.f);
-	playerShape.setPosition(100.f, 100.f);
-	playerShape.setFillColor(sf::Color::Magenta);
+	if (!texture.loadFromFile("sprites/Player.png"))
+	{
+		// Handle loading error
+	}
+	playerSprite.setTexture(texture);
+	playerSprite.setPosition(100.f, 100.f);
 }
 
 // Calls all methods required to load, process and display the game and its window.
@@ -16,7 +20,6 @@ void Game::Run()
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	while (gameWindow.isOpen())
 	{
-		//ProcessInput();
 		timeSinceLastUpdate += clock.restart();
 		while (timeSinceLastUpdate > timePerFrame)
 		{
@@ -64,14 +67,14 @@ void Game::Update(sf::Time deltaTime)
 	if (isMovingRight)
 		movement.x += 1.f;
 
-	playerShape.move(movement * deltaTime.asSeconds());
+	playerSprite.move(movement * deltaTime.asSeconds());
 }
 
 // Refreshes & draws the game window
 void Game::Render()
 {
 	gameWindow.clear();
-	gameWindow.draw(playerShape);
+	gameWindow.draw(playerSprite);
 	gameWindow.display();
 }
 

@@ -19,7 +19,8 @@ private:
 	const sf::Time timePerFrame;
 
 	sf::RenderWindow gameWindow;
-	sf::CircleShape playerShape;
+	sf::Texture texture;
+	sf::Sprite playerSprite;
 
 	bool isMovingUp;
 	bool isMovingDown;
