@@ -1,5 +1,3 @@
-#include "Platform/Platform.hpp"
-
 class Game
 {
 public:
@@ -15,9 +13,3 @@ private:
 	sf::RenderWindow mWindow;
 	sf::CircleShape mPlayer;
 };
-
-int main()
-{
-	Game game;
-	game.run();
-}
