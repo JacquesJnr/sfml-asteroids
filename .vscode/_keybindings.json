@@ -7,7 +7,7 @@
 	},
 	{
 		"key": "f9",
-		"command": "-bash ./build.sh buildrun Debug vscode",
+		"command": "-editor.debug.action.toggleBreakpoint",
 		"when": "editorTextFocus"
 	},
 	{
