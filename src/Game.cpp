@@ -9,33 +9,92 @@ Game::Game() :
 	playerShape.setFillColor(sf::Color::Magenta);
 }
 
+// Calls all methods required to load, process and display the game and its window.
 void Game::Run()
 {
+	sf::Clock clock;
+	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	while (gameWindow.isOpen())
 	{
-		ProcessInput();
-		Update();
+		//ProcessInput();
+		timeSinceLastUpdate += clock.restart();
+		while (timeSinceLastUpdate > timePerFrame)
+		{
+			timeSinceLastUpdate -= timePerFrame;
+			ProcessInput();
+			Update(timePerFrame);
+		}
 		Render();
 	}
 }
 
+// Polls all inputs by the player through sf::Event obejct
 void Game::ProcessInput()
 {
 	sf::Event event;
 	while (gameWindow.pollEvent(event))
 	{
-		if (event.type == sf::Event::Closed)
-			gameWindow.close();
+		switch (event.type)
+		{
+			case sf::Event::KeyPressed:
+				handlePlayerInput(event.key.code, true);
+				break;
+			case sf::Event::KeyReleased:
+				handlePlayerInput(event.key.code, false);
+				break;
+			case sf::Event::Closed:
+				gameWindow.close();
+				break;
+			default:
+				break;
+		}
 	}
 }
 
-void Game::Update()
+//
+void Game::Update(sf::Time deltaTime)
 {
+	sf::Vector2f movement(0.f, 0.f);
+	if (isMovingUp)
+		movement.y -= 1.f;
+	if (isMovingDown)
+		movement.y += 1.f;
+	if (isMovingLeft)
+		movement.x -= 1.f;
+	if (isMovingRight)
+		movement.x += 1.f;
+
+	playerShape.move(movement * deltaTime.asSeconds());
 }
 
+// Refreshes & draws the game window
 void Game::Render()
 {
 	gameWindow.clear();
 	gameWindow.draw(playerShape);
 	gameWindow.display();
+}
+
+void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
+{
+	// Checks if the player is moving forward
+	if (key == sf::Keyboard::W || key == sf::Keyboard::Up)
+	{
+		isMovingUp = isPressed;
+	}
+
+	if (key == sf::Keyboard::S || key == sf::Keyboard::Down)
+	{
+		isMovingDown = isPressed;
+	}
+
+	else if (key == sf::Keyboard::A || key == sf::Keyboard::Left)
+	{
+		isMovingLeft = isPressed;
+	}
+
+	else if (key == sf::Keyboard::D || key == sf::Keyboard::Right)
+	{
+		isMovingRight = isPressed;
+	}
 }
