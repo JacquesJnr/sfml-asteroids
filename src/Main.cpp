@@ -1,22 +1,8 @@
 #include "Platform/Platform.hpp"
-class Game
-{
-public:
-	Game();
-	void run();
-
-private:
-	void processEvents();
-	void update();
-	void render();
-
-private:
-	sf::RenderWindow mWindow;
-	sf::CircleShape mPlayer;
-};
+#include <Game.hpp>
 
 int main()
 {
 	Game game;
-	game.run();
+	game.Run();
 }

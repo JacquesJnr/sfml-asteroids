@@ -1,19 +1,41 @@
-#include "Game.h"
+#include <Game.hpp>
 
 Game::Game() :
-	mWindow(sf::VideoMode(640, 480), "SFML Application"),
-	mPlayer()
+	gameWindow(sf::VideoMode(800, 800), "Asteroids!"),
+	playerShape()
 {
-	mPlayer.setRadius(40.f);
-	mPlayer.setPosition(100.f, 100.f);
-	mPlayer.setFillColor(sf::Color::Cyan);
+	playerShape.setRadius(40.f);
+	playerShape.setPosition(100.f, 100.f);
+	playerShape.setFillColor(sf::Color::Magenta);
 }
-void Game::run()
+
+void Game::Run()
 {
-	while (mWindow.isOpen())
+	while (gameWindow.isOpen())
 	{
-		processEvents();
-		update();
-		render();
+		ProcessInput();
+		Update();
+		Render();
 	}
+}
+
+void Game::ProcessInput()
+{
+	sf::Event event;
+	while (gameWindow.pollEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+			gameWindow.close();
+	}
+}
+
+void Game::Update()
+{
+}
+
+void Game::Render()
+{
+	gameWindow.clear();
+	gameWindow.draw(playerShape);
+	gameWindow.display();
 }
