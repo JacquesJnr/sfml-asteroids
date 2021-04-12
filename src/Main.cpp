@@ -7,6 +7,7 @@
 #include <SFML/Window.hpp>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,9 @@ std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
 std::string FONTS = "fonts/";
 
-sf::Vector2f playerPos = nullptr;
+sf::Vector2f playerPos;
+std::stringstream playerCoordsX;
+std::stringstream playerCoordsY;
 
 int main()
 {
@@ -34,11 +37,15 @@ int main()
 	sprite.setPosition(ScreenX / 2, ScreenY / 2);
 	sprite.setScale(0.5f, 0.5f);
 
+	playerPos = sf::Vector2f(sprite.getPosition().x, sprite.getPosition().y);
+	playerCoordsX << std::fixed << std::setprecision(2) << playerPos.x;
+	playerCoordsY << std::fixed << std::setprecision(2) << playerPos.y;
+
 	// Create a graphical text to display
 	sf::Font font;
 	if (!font.loadFromFile(ASSETS + FONTS + "Teko-Regular.ttf"))
 		return EXIT_FAILURE;
-	sf::Text text("Hello SFML", font, 50);
+	sf::Text text("X: " + playerCoordsX.str() + " Y: " + playerCoordsY.str(), font, 20);
 
 	// Open game window
 	while (window.isOpen())
