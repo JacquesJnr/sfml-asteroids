@@ -15,13 +15,18 @@
 int ScreenX = 800;
 int ScreenY = 800;
 
+float dt = 0;
+float thrustSpeed = 10.0f;
+
 std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
 std::string FONTS = "fonts/";
 
 sf::Vector2f playerPos;
-float xPos;
-float yPos;
+float xPos = 400;
+float yPos = 400;
+
+sf::Vector2f spaceship(400, 400);
 
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
@@ -31,13 +36,10 @@ bool left;
 bool right;
 bool down;
 
-float thrustSpeed = 10.0f;
-
 int main()
 {
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
-
 	// Load Player Texture
 	sf::Texture texture;
 	if (!texture.loadFromFile(ASSETS + SPRITES + "Player.png"))
@@ -77,49 +79,50 @@ int main()
 	{
 		// Process events
 		sf::Event event;
+		sf::Clock deltaClock;
+		sf::Time timer;
 		while (window.pollEvent(event))
 		{
+
 			// Close window: exit
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// If the player pushes a key
-			if (event.type == sf::Event::KeyPressed)
+
+			// Move the player upwards, pressing up
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
-				// If that key is W or Up
-				if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::Up)
-				{
-					std::cout << "Up" << '\n';
-					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - thrustSpeed);
-				}
-
-				// If that key is S or Down
-				if (event.key.code == sf::Keyboard::S || event.key.code == sf::Keyboard::Down)
-				{
-					std::cout << "Down" << '\n';
-					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + thrustSpeed);
-				}
-
-				// If that key is A or Left
-				if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left)
-				{
-					std::cout << "Left" << '\n';
-					playerSprite.setPosition(playerSprite.getPosition().x - thrustSpeed, playerSprite.getPosition().y);
-				}
-
-				// If that key is D or Right
-				if (event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right)
-				{
-					std::cout << "Right" << '\n';
-					playerSprite.setPosition(playerSprite.getPosition().x + thrustSpeed, playerSprite.getPosition().y);
-				}
-
-				xPos = playerSprite.getPosition().x;
-				yPos = playerSprite.getPosition().y;
-				playerPos = sf::Vector2f(xPos, yPos);
-				text.setString("X: " + std::to_string(playerPos.x) + " Y: " + std::to_string(playerPos.y));
+				std::cout << "Up" << '\n';
+				playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - thrustSpeed);
 			}
 
+			// Move the player downwards, pressing down
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			{
+				std::cout << "Up" << '\n';
+				playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + thrustSpeed);
+			}
+
+			// If left is pressed.
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			{
+				std::cout << "Left" << '\n';
+				playerSprite.setPosition(playerSprite.getPosition().x - thrustSpeed, playerSprite.getPosition().y);
+			}
+
+			// If right is pressed
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			{
+				std::cout << "Right" << '\n';
+				playerSprite.setPosition(playerSprite.getPosition().x + thrustSpeed, playerSprite.getPosition().y);
+			}
+
+			text.setString("X: " + std::to_string(playerPos.x) + " Y: " + std::to_string(playerPos.y));
+
+			timer = deltaClock.restart();
+			dt = timer.asSeconds();
+
 			// Screen Wrapping
+			// Wrap left & right
 			if (xPos >= ScreenX + playerSprite.getScale().x)
 			{
 				playerSprite.setPosition(0, playerPos.y);
@@ -129,6 +132,7 @@ int main()
 				playerSprite.setPosition(ScreenX, playerPos.y);
 			}
 
+			// Wrap up and down
 			if (yPos <= 0 - playerSprite.getScale().y)
 			{
 				playerSprite.setPosition(playerPos.x, ScreenY);
@@ -137,6 +141,12 @@ int main()
 			{
 				playerSprite.setPosition(playerPos.x, 0);
 			}
+
+			// Restart the clock and get the delta time
+
+			xPos = playerSprite.getPosition().x;
+			yPos = playerSprite.getPosition().y;
+			playerPos = sf::Vector2f(xPos, yPos);
 		}
 
 		// Clear screen
