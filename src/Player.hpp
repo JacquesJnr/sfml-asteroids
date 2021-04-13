@@ -1,15 +1,19 @@
+#include <SFML/Graphics.hpp>
+
 #ifndef PLAYER_H
-#define PLAYER_H
-#pragma once
-	
-class Player  
+	#define PLAYER_H
+	#pragma once
+
+class Player
 {
-	private:
+private:
+	float xPos;
+	float yPos;
+	sf::Vector2f currentPosition;
+	sf::Texture* texture;
 
-	public:
-
-		Player();
-		~Player();
-
+public:
+	Player(float x, float y, sf::Texture texture);
+	~Player();
 };
 #endif

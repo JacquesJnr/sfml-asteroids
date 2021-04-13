@@ -5,6 +5,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -21,6 +22,11 @@ std::string FONTS = "fonts/";
 sf::Vector2f playerPos;
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
+
+bool up;
+bool left;
+bool right;
+bool down;
 
 int main()
 {
@@ -71,6 +77,16 @@ int main()
 			// Close window: exit
 			if (event.type == sf::Event::Closed)
 				window.close();
+			// If the player pushes a key
+			if (event.type == sf::Event::KeyPressed)
+			{
+				// If that key is W or Up
+				if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::Up)
+				{
+					std::cout << "Up" << '\n';
+					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - 5);
+				}
+			}
 		}
 		// Clear screen
 		window.clear();
