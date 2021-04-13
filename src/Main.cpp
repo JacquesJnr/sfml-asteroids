@@ -15,18 +15,9 @@
 int ScreenX = 800;
 int ScreenY = 800;
 
-float dt = 0;
-float thrustSpeed = 10.0f;
-
 std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
 std::string FONTS = "fonts/";
-
-sf::Vector2f playerPos;
-float xPos = 400;
-float yPos = 400;
-
-sf::Vector2f spaceship(400, 400);
 
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
@@ -35,6 +26,10 @@ bool up;
 bool left;
 bool right;
 bool down;
+
+// Delta time
+float dt = 0;
+float thrustSpeed = 200.0f;
 
 int main()
 {
@@ -50,11 +45,6 @@ int main()
 	playerSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
-	playerPos = sf::Vector2f(playerSprite.getPosition().x, playerSprite.getPosition().y);
-
-	// Get the player coordinates for debugging
-	playerCoordsX << std::fixed << std::setprecision(2) << playerPos.x;
-	playerCoordsY << std::fixed << std::setprecision(2) << playerPos.y;
 
 	// Create BG Texture
 	sf::Texture backGroundTexture;
@@ -74,79 +64,69 @@ int main()
 		return EXIT_FAILURE;
 	sf::Text text("X: " + playerCoordsX.str() + " Y: " + playerCoordsY.str(), font, 20);
 
+	sf::Clock clock;
+	sf::Time time;
+
+	sf::Vector2f ship(400, 400);
+
 	// Open game window
 	while (window.isOpen())
 	{
 		// Process events
 		sf::Event event;
-		sf::Clock deltaClock;
-		sf::Time timer;
 		while (window.pollEvent(event))
 		{
-
 			// Close window: exit
 			if (event.type == sf::Event::Closed)
 				window.close();
+		}
 
-			// Move the player upwards, pressing up
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			{
-				std::cout << "Up" << '\n';
-				playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - thrustSpeed);
-			}
+		// Set coordinate string
+		text.setString("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y));
 
-			// Move the player downwards, pressing down
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			{
-				std::cout << "Up" << '\n';
-				playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + thrustSpeed);
-			}
+		// Check for upwards input
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			ship.y -= thrustSpeed * dt;
 
-			// If left is pressed.
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			{
-				std::cout << "Left" << '\n';
-				playerSprite.setPosition(playerSprite.getPosition().x - thrustSpeed, playerSprite.getPosition().y);
-			}
+		// Check for downwards input
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			ship.y += thrustSpeed * dt;
 
-			// If right is pressed
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			{
-				std::cout << "Right" << '\n';
-				playerSprite.setPosition(playerSprite.getPosition().x + thrustSpeed, playerSprite.getPosition().y);
-			}
+		//Check for left input
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			ship.x -= thrustSpeed * dt;
 
-			text.setString("X: " + std::to_string(playerPos.x) + " Y: " + std::to_string(playerPos.y));
+		//Check for right input
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			ship.x += thrustSpeed * dt;
 
-			timer = deltaClock.restart();
-			dt = timer.asSeconds();
+		// Restart the clock and get the delta time
+		time = clock.restart();
+		dt = time.asSeconds();
 
-			// Screen Wrapping
-			// Wrap left & right
-			if (xPos >= ScreenX + playerSprite.getScale().x)
-			{
-				playerSprite.setPosition(0, playerPos.y);
-			}
-			else if (xPos <= 0 + playerSprite.getScale().y)
-			{
-				playerSprite.setPosition(ScreenX, playerPos.y);
-			}
+		// Move player
+		playerSprite.setPosition(ship.x, ship.y);
 
-			// Wrap up and down
-			if (yPos <= 0 - playerSprite.getScale().y)
-			{
-				playerSprite.setPosition(playerPos.x, ScreenY);
-			}
-			else if (yPos >= ScreenY + playerSprite.getScale().y)
-			{
-				playerSprite.setPosition(playerPos.x, 0);
-			}
+		// Screen Wrapping!
+		// Wrap left & right
+		if (ship.x >= ScreenX + playerSprite.getScale().x)
+		{
+			ship.x = 0;
+		}
+		else if (ship.x <= 0 + playerSprite.getScale().y)
+		{
+			ship.x = ScreenX;
+		}
 
-			// Restart the clock and get the delta time
-
-			xPos = playerSprite.getPosition().x;
-			yPos = playerSprite.getPosition().y;
-			playerPos = sf::Vector2f(xPos, yPos);
+		// Wrap up and down
+		if (ship.y <= 0 - playerSprite.getScale().y)
+		{
+			ship.y = ScreenY;
+		}
+		else if (ship.y >= ScreenY + playerSprite.getScale().y)
+		{
+			ship.y = 0; // Set coordinate string
+			text.setString("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y));
 		}
 
 		// Clear screen
