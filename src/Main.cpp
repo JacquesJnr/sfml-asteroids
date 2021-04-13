@@ -27,19 +27,33 @@ int main()
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
 
-	// Load a sprite to display
+	// Load Player Texture
 	sf::Texture texture;
 	if (!texture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
-	sf::Sprite sprite(texture);
+	sf::Sprite playerSprite(texture);
 
-	sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-	sprite.setPosition(ScreenX / 2, ScreenY / 2);
-	sprite.setScale(0.5f, 0.5f);
+	// Place the player in the center of the screen
+	playerSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
+	playerSprite.setScale(0.3f, 0.3f);
+	playerPos = sf::Vector2f(playerSprite.getPosition().x, playerSprite.getPosition().y);
 
-	playerPos = sf::Vector2f(sprite.getPosition().x, sprite.getPosition().y);
+	// Get the player coordinates for debugging
 	playerCoordsX << std::fixed << std::setprecision(2) << playerPos.x;
 	playerCoordsY << std::fixed << std::setprecision(2) << playerPos.y;
+
+	// Create BG Texture
+	sf::Texture backGroundTexture;
+	// Load BG Texture
+	if (!backGroundTexture.loadFromFile(ASSETS + SPRITES + "Background.png"))
+		return EXIT_FAILURE;
+	// Load BG Sprite
+	sf::Sprite bgSprite(backGroundTexture);
+
+	// Set BG position
+	bgSprite.setOrigin(backGroundTexture.getSize().x / 2, backGroundTexture.getSize().y / 2);
+	bgSprite.setPosition(ScreenX / 2, ScreenY / 2);
 
 	// Create a graphical text to display
 	sf::Font font;
@@ -60,8 +74,10 @@ int main()
 		}
 		// Clear screen
 		window.clear();
-		// Draw the sprite
-		window.draw(sprite);
+		//Draw BG
+		window.draw(bgSprite);
+		// Draw the player
+		window.draw(playerSprite);
 		// Draw the string
 		window.draw(text);
 		// Update the window
