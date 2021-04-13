@@ -20,6 +20,9 @@ std::string SPRITES = "sprites/";
 std::string FONTS = "fonts/";
 
 sf::Vector2f playerPos;
+float xPos;
+float yPos;
+
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
 
@@ -27,6 +30,8 @@ bool up;
 bool left;
 bool right;
 bool down;
+
+float thrustSpeed = 10.0f;
 
 int main()
 {
@@ -84,10 +89,56 @@ int main()
 				if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::Up)
 				{
 					std::cout << "Up" << '\n';
-					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - 5);
+					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - thrustSpeed);
 				}
+
+				// If that key is S or Down
+				if (event.key.code == sf::Keyboard::S || event.key.code == sf::Keyboard::Down)
+				{
+					std::cout << "Down" << '\n';
+					playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + thrustSpeed);
+				}
+
+				// If that key is A or Left
+				if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left)
+				{
+					std::cout << "Left" << '\n';
+					playerSprite.setPosition(playerSprite.getPosition().x - thrustSpeed, playerSprite.getPosition().y);
+				}
+
+				// If that key is D or Right
+				if (event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right)
+				{
+					std::cout << "Right" << '\n';
+					playerSprite.setPosition(playerSprite.getPosition().x + thrustSpeed, playerSprite.getPosition().y);
+				}
+
+				xPos = playerSprite.getPosition().x;
+				yPos = playerSprite.getPosition().y;
+				playerPos = sf::Vector2f(xPos, yPos);
+				text.setString("X: " + std::to_string(playerPos.x) + " Y: " + std::to_string(playerPos.y));
+			}
+
+			// Screen Wrapping
+			if (xPos >= ScreenX + playerSprite.getScale().x)
+			{
+				playerSprite.setPosition(0, playerPos.y);
+			}
+			else if (xPos <= 0 + playerSprite.getScale().y)
+			{
+				playerSprite.setPosition(ScreenX, playerPos.y);
+			}
+
+			if (yPos <= 0 - playerSprite.getScale().y)
+			{
+				playerSprite.setPosition(playerPos.x, ScreenY);
+			}
+			else if (yPos >= ScreenY + playerSprite.getScale().y)
+			{
+				playerSprite.setPosition(playerPos.x, 0);
 			}
 		}
+
 		// Clear screen
 		window.clear();
 		//Draw BG
