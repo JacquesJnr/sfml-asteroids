@@ -39,16 +39,25 @@ int main()
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
 
-	// Load player Texture
-	sf::Texture texture;
-	if (!texture.loadFromFile(ASSETS + SPRITES + "Player.png"))
+	// Load player Textures
+	sf::Texture playerTexture;
+	sf::Texture forwardTexture;
+	sf::Texture backwardsTexture;
+
+	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
+		return EXIT_FAILURE;
+
+	if (!forwardTexture.loadFromFile(ASSETS + SPRITES + "PlayerForward.png"))
+		return EXIT_FAILURE;
+
+	if (!backwardsTexture.loadFromFile(ASSETS + SPRITES + "PlayerBackward.png"))
 		return EXIT_FAILURE;
 
 	// Define the player sprite and assign the player texture
-	sf::Sprite playerSprite(texture);
+	sf::Sprite playerSprite(playerTexture);
 
 	// Place the player in the center of the screen
-	playerSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
 
@@ -126,6 +135,27 @@ int main()
 			{
 				if (event.key.code == sf::Keyboard::Escape)
 					window.close();
+
+				if (event.key.code == sf::Keyboard::W)
+				{
+					// Check the player is facing up relative to mouse and set thruster direction
+					if (ship.y > mousePosition.y)
+						playerSprite.setTexture(forwardTexture);
+					else
+						playerSprite.setTexture(backwardsTexture);
+				}
+				else if (event.key.code == sf::Keyboard::S)
+				{
+					// Check the player is facing up relative to mouse and set thruster direction
+					if (ship.y < mousePosition.y)
+						playerSprite.setTexture(forwardTexture);
+					else
+						playerSprite.setTexture(backwardsTexture);
+				}
+				else
+				{
+					playerSprite.setTexture(playerTexture);
+				}
 			}
 		}
 
@@ -147,11 +177,13 @@ int main()
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
-			
+			ship.y -= thrustSpeed * dt;
 		}
 		// Check for downwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		{
 			ship.y += thrustSpeed * dt;
+		}
 
 		//Check for left input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -166,8 +198,7 @@ int main()
 		dt = time.asSeconds();
 		fraction = dragCoefficient * dt;
 		// Move player
-		//playerSprite.setPosition(ship.x, ship.y);
-		playerSprite.move(playerSprite, ship.y);
+		playerSprite.setPosition(ship.x, ship.y);
 
 		// Set player rotation to that of the mouses rotation
 		playerSprite.setRotation(rotation - 90);
@@ -195,12 +226,14 @@ int main()
 		window.draw(playerSprite);
 		//Draw the asteroid
 		window.draw(asteroid);
-		// Draw player position debug
-		window.draw(text);
-		// Draw the mouse position debug
-		window.draw(mouseDebug);
-		// Draw rotation debug
-		window.draw(playerRotation);
+
+		// // Draw player position debug
+		// window.draw(text);
+		// // Draw the mouse position debug
+		// window.draw(mouseDebug);
+		// // Draw rotation debug
+		// window.draw(playerRotation);
+
 		// Update the window
 		window.display();
 	}
