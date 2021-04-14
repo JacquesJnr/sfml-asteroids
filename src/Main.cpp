@@ -31,6 +31,8 @@ bool down;
 // Delta time
 float dt = 0;
 float thrustSpeed = 200.0f;
+float dragCoefficient = 30.f;
+float fraction;
 
 int main()
 {
@@ -119,6 +121,12 @@ int main()
 			// Close window: exit
 			if (event.type == sf::Event::Closed)
 				window.close();
+
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
+			}
 		}
 
 		// Set Debug coordinate string
@@ -138,8 +146,9 @@ int main()
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			ship.y -= thrustSpeed * dt;
-
+		{
+			
+		}
 		// Check for downwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			ship.y += thrustSpeed * dt;
@@ -155,26 +164,28 @@ int main()
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
-
+		fraction = dragCoefficient * dt;
 		// Move player
-		playerSprite.setPosition(ship.x, ship.y);
+		//playerSprite.setPosition(ship.x, ship.y);
+		playerSprite.move(playerSprite, ship.y);
+
 		// Set player rotation to that of the mouses rotation
 		playerSprite.setRotation(rotation - 90);
 
 		// Screen Wrapping!
 		// Wrap left & right
 		if (ship.x >= ScreenX + playerSprite.getScale().x)
-			ship.x = 0;
+			ship.x = 5;
 
-		else if (ship.x <= 0 + playerSprite.getScale().y)
+		else if (ship.x <= 2 + playerSprite.getScale().y)
 			ship.x = ScreenX;
 
 		// Wrap up and down
-		if (ship.y <= 0 - playerSprite.getScale().y)
+		if (ship.y <= 2 - playerSprite.getScale().y)
 			ship.y = ScreenY;
 
 		else if (ship.y >= ScreenY + playerSprite.getScale().y)
-			ship.y = 0; // Set coordinate string
+			ship.y = 5; // Set coordinate string
 
 		// Clear screen
 		window.clear();
