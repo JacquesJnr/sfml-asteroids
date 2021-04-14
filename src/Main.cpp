@@ -92,11 +92,19 @@ int main()
 	// Player Position.
 	sf::Vector2f ship(400, 400);
 
+	// Player Rotation
+	sf::Text playerRotation("Player Rot: ", font, 20);
+	playerRotation.setPosition(0, 40);
+	playerRotation.setFillColor(sf::Color(255, 255, 0, 255));
+
 	// Mouse Position Debug.
 	sf::Mouse mouse;
-	sf::Vector2i mousePosition(0, 0);
+	sf::Vector2i mousePosition;
 	sf::Text mouseDebug("Mouse X: 0  Mouse Y: 0", font, 20);
-	mouseDebug.setPosition(0, 40);
+	mouseDebug.setPosition(0, 20);
+
+	//Pi
+	const float PI = 3.14159265;
 
 	// Debug Player Position.
 	sf::Text text("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y), font, 20);
@@ -114,11 +122,19 @@ int main()
 		}
 
 		// Set Debug coordinate string
-		text.setString("Player X" + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y));
+		text.setString("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y));
 
 		// Set mousePosition vector to mouse coords
-		mousePosition = mouse.getPosition();
+		mousePosition = mouse.getPosition(window);
 		mouseDebug.setString("Mouse X: " + std::to_string(mousePosition.x) + " Mouse Y: " + std::to_string(mousePosition.y));
+
+		// Get rotation of mouse relative to player
+		float dx = playerSprite.getPosition().x - mousePosition.x;
+		float dy = playerSprite.getPosition().y - mousePosition.y;
+		float rotation = (atan2(dy, dx)) * 180 / PI;
+
+		// Set rotation string to current player rotation
+		playerRotation.setString("Player Rotation: " + std::to_string(rotation));
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -142,6 +158,8 @@ int main()
 
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
+		// Set player rotation to that of the mouses rotation
+		playerSprite.setRotation(rotation - 90);
 
 		// Screen Wrapping!
 		// Wrap left & right
@@ -170,6 +188,8 @@ int main()
 		window.draw(text);
 		// Draw the mouse position debug
 		window.draw(mouseDebug);
+		// Draw rotation debug
+		window.draw(playerRotation);
 		// Update the window
 		window.display();
 	}
