@@ -137,19 +137,19 @@ int main()
 		playerRotation.setString("Player Rotation: " + std::to_string(rotation));
 
 		// Check for upwards input
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			ship.y -= thrustSpeed * dt;
 
 		// Check for downwards input
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			ship.y += thrustSpeed * dt;
 
 		//Check for left input
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			ship.x -= thrustSpeed * dt;
 
 		//Check for right input
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			ship.x += thrustSpeed * dt;
 
 		// Restart the clock and get the delta time
