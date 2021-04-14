@@ -35,16 +35,37 @@ int main()
 {
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
-	// Load Player Texture
+
+	// Load player Texture
 	sf::Texture texture;
 	if (!texture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
+
+	// Define the player sprite and assign the player texture
 	sf::Sprite playerSprite(texture);
 
 	// Place the player in the center of the screen
 	playerSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
+
+	// Create one asteroid
+	sf::CircleShape asteroid;
+
+	// Place the asteroid in the scene
+	asteroid.setPosition(300, 0);
+	asteroid.setRadius(200);
+	asteroid.setPointCount(200);
+
+	// Declare asteroid texture.
+	sf::Texture astrTexture;
+
+	// Load the asteroid texture
+	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
+		return EXIT_FAILURE;
+
+	// Set the asteroid's texture to the image we just loaded
+	asteroid.setTexture(&astrTexture);
 
 	// Create BG Texture
 	sf::Texture backGroundTexture;
@@ -62,12 +83,19 @@ int main()
 	sf::Font font;
 	if (!font.loadFromFile(ASSETS + FONTS + "Teko-Regular.ttf"))
 		return EXIT_FAILURE;
-	sf::Text text("X: " + playerCoordsX.str() + " Y: " + playerCoordsY.str(), font, 20);
 
+	// Delta time clock and time signature.
 	sf::Clock clock;
 	sf::Time time;
 
+	// Player Position.
 	sf::Vector2f ship(400, 400);
+
+	// Mouse Position.
+	sf::Vector2f mousePosition(0, 0);
+
+	// Debug Player Position.
+	sf::Text text("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y), font, 20);
 
 	// Open game window
 	while (window.isOpen())
@@ -110,24 +138,17 @@ int main()
 		// Screen Wrapping!
 		// Wrap left & right
 		if (ship.x >= ScreenX + playerSprite.getScale().x)
-		{
 			ship.x = 0;
-		}
+
 		else if (ship.x <= 0 + playerSprite.getScale().y)
-		{
 			ship.x = ScreenX;
-		}
 
 		// Wrap up and down
 		if (ship.y <= 0 - playerSprite.getScale().y)
-		{
 			ship.y = ScreenY;
-		}
+
 		else if (ship.y >= ScreenY + playerSprite.getScale().y)
-		{
 			ship.y = 0; // Set coordinate string
-			text.setString("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y));
-		}
 
 		// Clear screen
 		window.clear();
@@ -135,6 +156,8 @@ int main()
 		window.draw(bgSprite);
 		// Draw the player
 		window.draw(playerSprite);
+		//Draw the asteroid
+		window.draw(asteroid);
 		// Draw the string
 		window.draw(text);
 		// Update the window
