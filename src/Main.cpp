@@ -5,6 +5,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Window/Mouse.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -54,7 +55,7 @@ int main()
 
 	// Place the asteroid in the scene
 	asteroid.setPosition(300, 0);
-	asteroid.setRadius(200);
+	asteroid.setRadius(50);
 	asteroid.setPointCount(200);
 
 	// Declare asteroid texture.
@@ -91,11 +92,14 @@ int main()
 	// Player Position.
 	sf::Vector2f ship(400, 400);
 
-	// Mouse Position.
-	sf::Vector2f mousePosition(0, 0);
+	// Mouse Position Debug.
+	sf::Mouse mouse;
+	sf::Vector2i mousePosition(0, 0);
+	sf::Text mouseDebug("Mouse X: 0  Mouse Y: 0", font, 20);
+	mouseDebug.setPosition(0, 40);
 
 	// Debug Player Position.
-	sf::Text text("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y), font, 20);
+	sf::Text text("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y), font, 20);
 
 	// Open game window
 	while (window.isOpen())
@@ -109,8 +113,12 @@ int main()
 				window.close();
 		}
 
-		// Set coordinate string
-		text.setString("X: " + std::to_string(ship.x) + " Y: " + std::to_string(ship.y));
+		// Set Debug coordinate string
+		text.setString("Player X" + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y));
+
+		// Set mousePosition vector to mouse coords
+		mousePosition = mouse.getPosition();
+		mouseDebug.setString("Mouse X: " + std::to_string(mousePosition.x) + " Mouse Y: " + std::to_string(mousePosition.y));
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -158,8 +166,10 @@ int main()
 		window.draw(playerSprite);
 		//Draw the asteroid
 		window.draw(asteroid);
-		// Draw the string
+		// Draw player position debug
 		window.draw(text);
+		// Draw the mouse position debug
+		window.draw(mouseDebug);
 		// Update the window
 		window.display();
 	}
