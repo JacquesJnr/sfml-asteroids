@@ -13,6 +13,13 @@
 #include <string>
 #include <vector>
 
+enum GameState
+{
+	Menu,
+	Game,
+	End
+};
+
 int ScreenX = 800;
 int ScreenY = 800;
 
@@ -34,10 +41,20 @@ float thrustSpeed = 200.0f;
 float dragCoefficient = 30.f;
 float fraction;
 
+GameState state;
+
 int main()
 {
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
+
+	// Load Main Menu Texture
+	sf::Texture mainMenuTexture;
+	sf::Sprite mainMenu;
+	if (!mainMenuTexture.loadFromFile(ASSETS + SPRITES + "Main Menu.png"))
+		return EXIT_FAILURE;
+
+	mainMenu.setTexture(mainMenuTexture);
 
 	// Load player Textures
 	sf::Texture playerTexture;
@@ -131,30 +148,15 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 
-			if (event.type == sf::Event::KeyPressed)
+			if (state == GameState::Menu)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
-					window.close();
+				if (event.type == sf::Event::KeyPressed)
+				{
+					if (event.key.code == sf::Keyboard::Escape)
+						window.close();
 
-				if (event.key.code == sf::Keyboard::W)
-				{
-					// Check the player is facing up relative to mouse and set thruster direction
-					if (ship.y > mousePosition.y)
-						playerSprite.setTexture(forwardTexture);
-					else
-						playerSprite.setTexture(backwardsTexture);
-				}
-				else if (event.key.code == sf::Keyboard::S)
-				{
-					// Check the player is facing up relative to mouse and set thruster direction
-					if (ship.y < mousePosition.y)
-						playerSprite.setTexture(forwardTexture);
-					else
-						playerSprite.setTexture(backwardsTexture);
-				}
-				else
-				{
-					playerSprite.setTexture(playerTexture);
+					if (event.key.code == sf::Keyboard::Space)
+						state = GameState::Game;
 				}
 			}
 		}
@@ -193,6 +195,22 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			ship.x += thrustSpeed * dt;
 
+		// ENUM STATES
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		{
+			state = GameState::Menu;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+		{
+			state = GameState::Game;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+		{
+			state = GameState::End;
+		}
+
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
@@ -218,14 +236,25 @@ int main()
 		else if (ship.y >= ScreenY + playerSprite.getScale().y)
 			ship.y = 5; // Set coordinate string
 
-		// Clear screen
-		window.clear();
-		//Draw BG
-		window.draw(bgSprite);
-		// Draw the player
-		window.draw(playerSprite);
-		//Draw the asteroid
-		window.draw(asteroid);
+		switch (state)
+		{
+			case GameState::Menu:
+				window.clear();
+				window.draw(mainMenu);
+				break;
+			case GameState::Game:
+				// Clear screen
+				window.clear();
+				//Draw BG
+				window.draw(bgSprite);
+				// Draw the player
+				window.draw(playerSprite);
+				//Draw the asteroid
+				window.draw(asteroid);
+				break;
+			default:
+				break;
+		}
 
 		// // Draw player position debug
 		// window.draw(text);
