@@ -95,9 +95,9 @@ int main()
 	sf::CircleShape bullet;
 
 	// Place the asteroid in the scene
-	asteroid.setPosition(300, 0);
-	asteroid.setRadius(50);
-	asteroid.setPointCount(200);
+	// asteroid.setPosition(300, 0);
+	// asteroid.setRadius(50);
+	// asteroid.setPointCount(200);
 
 	// Declare asteroid texture.
 	sf::Texture astrTexture;
@@ -107,7 +107,7 @@ int main()
 		return EXIT_FAILURE;
 
 	// Set the asteroid's texture to the image we just loaded
-	asteroid.setTexture(&astrTexture);
+	//asteroid.setTexture(&astrTexture);
 
 	// Create BG Texture
 	sf::Texture backGroundTexture;

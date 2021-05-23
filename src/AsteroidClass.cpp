@@ -4,6 +4,7 @@ AsteroidClass::AsteroidClass()
 {
 	// Initialize normal asteroid
 	shape.setPosition(100, 100);
+	shape.setRadius(this->initialRadius);
 	shape.setPosition(sf::Vector2f(100, 100));
 	shape.setFillColor(sf::Color::Red);
 }
