@@ -4,14 +4,11 @@
 
 class Bullet
 {
-private:
-	sf::CircleShape shape;
-	float radius = 10.f;
-	float bulletSpeed = 100.f;
 
 public:
 	Bullet();
-	//void Shoot(sf::Vector2f origin, float angle);
 	~Bullet();
+	sf::CircleShape shape;
 };
+
 #endif

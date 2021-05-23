@@ -1,3 +1,4 @@
+#include <AsteroidClass.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Main.hpp>
@@ -43,6 +44,8 @@ float fraction;
 
 GameState state;
 
+//std::vector bulletVector;
+
 int main()
 {
 	// Create the main window
@@ -80,6 +83,14 @@ int main()
 
 	// Create one asteroid
 	sf::CircleShape asteroid;
+	AsteroidClass myAsteroid;
+	myAsteroid.shape.setPosition(300, 0);
+	myAsteroid.shape.setRadius(50);
+	myAsteroid.shape.setPointCount(200);
+	myAsteroid.shape.setFillColor(sf::Color::Green);
+
+	//Create one bullet
+	sf::CircleShape bullet;
 
 	// Place the asteroid in the scene
 	asteroid.setPosition(300, 0);
@@ -158,6 +169,12 @@ int main()
 					if (event.key.code == sf::Keyboard::Space)
 						state = GameState::Game;
 				}
+
+				if (event.mouseButton.button == sf::Mouse::Left)
+				{
+					bullet.setFillColor(sf::Color::White);
+					bullet.setRadius(5.0f);
+				}
 			}
 		}
 
@@ -181,6 +198,7 @@ int main()
 		{
 			ship.y -= thrustSpeed * dt;
 		}
+
 		// Check for downwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
@@ -215,8 +233,11 @@ int main()
 		time = clock.restart();
 		dt = time.asSeconds();
 		fraction = dragCoefficient * dt;
+
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
+
+		// Move the bullets
 
 		// Set player rotation to that of the mouses rotation
 		playerSprite.setRotation(rotation - 90);
@@ -251,6 +272,7 @@ int main()
 				window.draw(playerSprite);
 				//Draw the asteroid
 				window.draw(asteroid);
+				window.draw(myAsteroid.shape);
 				break;
 			default:
 				break;
