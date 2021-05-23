@@ -82,14 +82,12 @@ int main()
 	playerSprite.setScale(0.3f, 0.3f);
 
 	// Create one asteroid
-
+	sf::CircleShape asteroid;
 	AsteroidClass myAsteroid;
-
-	// sf::CircleShape asteroid;
-	// myAsteroid.shape.setPosition(300, 0);
-	// myAsteroid.shape.setRadius(50);
-	// myAsteroid.shape.setPointCount(200);
-	// myAsteroid.shape.setFillColor(sf::Color::Green);
+	myAsteroid.shape.setPosition(300, 0);
+	myAsteroid.shape.setRadius(50);
+	myAsteroid.shape.setPointCount(200);
+	myAsteroid.shape.setFillColor(sf::Color::Green);
 
 	//Create one bullet
 	sf::CircleShape bullet;
@@ -273,7 +271,7 @@ int main()
 				// Draw the player
 				window.draw(playerSprite);
 				//Draw the asteroid
-				myAsteroid.AsteroidDraw(window);
+				window.draw(asteroid);
 				window.draw(myAsteroid.shape);
 				break;
 			default:
