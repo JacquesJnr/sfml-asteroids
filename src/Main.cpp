@@ -42,8 +42,14 @@ float thrustSpeed = 200.0f;
 float dragCoefficient = 30.f;
 float fraction;
 
+// Spawn timer
+const float timerTime = 1.5f;
+float timer = 0;
+
 GameState state;
 
+// Asteroid Vector
+std::vector<AsteroidClass> asteroids = {};
 //std::vector bulletVector;
 
 int main()
@@ -81,9 +87,6 @@ int main()
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
 
-	// Create one asteroid
-	AsteroidClass myAsteroid;
-
 	//Create one bullet
 	sf::CircleShape bullet;
 
@@ -93,9 +96,6 @@ int main()
 	// Load the asteroid texture
 	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
 		return EXIT_FAILURE;
-
-	// Set the asteroid's texture to the image we just loaded
-	myAsteroid.shape.setTexture(&astrTexture);
 
 	// Create BG Texture
 	sf::Texture backGroundTexture;
@@ -224,11 +224,26 @@ int main()
 		dt = time.asSeconds();
 		fraction = dragCoefficient * dt;
 
+		// Run spawn timer
+		timer += dt;
+		if (timer >= timerTime)
+		{
+			timer = 0.f;
+			// Spawn Asteroids every 1.5 secs
+			AsteroidClass newAsteroid;
+			newAsteroid.shape.setTexture(&astrTexture);
+			asteroids.push_back(newAsteroid);
+			std::cout << "Spawn" << std::endl;
+		}
+
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
 
-		// Update Asteroid
-		myAsteroid.Update(dt);
+		// Update objects in the asteroid vector
+		for (uint i = 0; i < asteroids.size(); i++)
+		{
+			asteroids[i].Update(dt);
+		}
 
 		// Set player rotation to that of the mouses rotation
 		playerSprite.setRotation(rotation - 90);
@@ -261,8 +276,11 @@ int main()
 				window.draw(bgSprite);
 				// Draw the player
 				window.draw(playerSprite);
-				//Draw the asteroid
-				myAsteroid.Draw(window);
+				// Draw asteroids
+				for (uint i = 0; i < asteroids.size(); i++)
+				{
+					asteroids[i].Draw(window);
+				}
 				break;
 			default:
 				break;

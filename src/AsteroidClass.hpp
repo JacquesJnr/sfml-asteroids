@@ -8,6 +8,7 @@ public:
 	AsteroidClass();
 	void Draw(sf::RenderWindow& window);
 	void Update(float& dt);
+	void OnHit();
 
 	sf::CircleShape shape;
 	sf::Vector2f velocity;

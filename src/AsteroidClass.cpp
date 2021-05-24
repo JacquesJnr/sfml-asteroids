@@ -19,3 +19,7 @@ void AsteroidClass::Update(float& dt)
 {
 	shape.setPosition(shape.getPosition().x + speed * dt, shape.getPosition().y + speed * dt);
 }
+
+void AsteroidClass::OnHit()
+{
+}
