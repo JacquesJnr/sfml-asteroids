@@ -82,20 +82,10 @@ int main()
 	playerSprite.setScale(0.3f, 0.3f);
 
 	// Create one asteroid
-	sf::CircleShape asteroid;
 	AsteroidClass myAsteroid;
-	myAsteroid.shape.setPosition(300, 0);
-	myAsteroid.shape.setRadius(50);
-	myAsteroid.shape.setPointCount(200);
-	myAsteroid.shape.setFillColor(sf::Color::Green);
 
 	//Create one bullet
 	sf::CircleShape bullet;
-
-	// Place the asteroid in the scene
-	asteroid.setPosition(300, 0);
-	asteroid.setRadius(50);
-	asteroid.setPointCount(200);
 
 	// Declare asteroid texture.
 	sf::Texture astrTexture;
@@ -105,7 +95,7 @@ int main()
 		return EXIT_FAILURE;
 
 	// Set the asteroid's texture to the image we just loaded
-	asteroid.setTexture(&astrTexture);
+	myAsteroid.shape.setTexture(&astrTexture);
 
 	// Create BG Texture
 	sf::Texture backGroundTexture;
@@ -271,7 +261,6 @@ int main()
 				// Draw the player
 				window.draw(playerSprite);
 				//Draw the asteroid
-				window.draw(asteroid);
 				window.draw(myAsteroid.shape);
 				break;
 			default:

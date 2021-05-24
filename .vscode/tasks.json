@@ -34,7 +34,7 @@
 	"tasks": [
 		{
 			"label": "Build & Run: Release",
-			"command": "bash ./build.sh buildrun Release vscode",
+			"command": "./build.sh buildrun Release vscode",
 			"type": "shell",
 			"group": {
 				"kind": "build",
@@ -42,7 +42,7 @@
 			},
 			"problemMatcher": [
 				"$gcc"
-			],
+			]
 		},
 		{
 			"label": "Build: Release",
@@ -82,7 +82,7 @@
 		},
 		{
 			"label": "Build & Run: Debug",
-			"command": "bash ./build.sh buildrun Debug vscode",
+			"command": "./build.sh buildrun Debug vscode",
 			"type": "shell",
 			"group": {
 				"kind": "build",
@@ -199,6 +199,25 @@
 			"problemMatcher": [
 				"$gcc"
 			]
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: gcc.exe build active file",
+			"command": "C:/mingw32/bin/gcc.exe",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe"
+			],
+			"options": {
+				"cwd": "C:/mingw32/bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: C:/mingw32/bin/gcc.exe"
 		}
 	]
 }
