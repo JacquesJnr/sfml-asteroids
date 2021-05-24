@@ -49,9 +49,23 @@ float timer = 0;
 
 GameState state;
 
+// Create Main Menu Texture
+sf::Texture mainMenuTexture;
+
+// Create BG Texture
+sf::Texture backGroundTexture;
+
+// Craete Player texture.
+sf::Texture playerTexture;
+
+// Create asteroid texture.
+sf::Texture astrTexture;
+
 // Asteroid Vector
 std::vector<AsteroidClass> asteroids = {};
 //std::vector bulletVector;
+
+void ManageAsteroids();
 
 int main()
 {
@@ -59,56 +73,38 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
 
 	// Load Main Menu Texture
-	sf::Texture mainMenuTexture;
 	sf::Sprite mainMenu;
 	if (!mainMenuTexture.loadFromFile(ASSETS + SPRITES + "Main Menu.png"))
 		return EXIT_FAILURE;
-
 	mainMenu.setTexture(mainMenuTexture);
 
-	// Load player Textures
-	sf::Texture playerTexture;
-	sf::Texture forwardTexture;
-	sf::Texture backwardsTexture;
-
+	// Load Player Texture
+	sf::Sprite playerSprite;
 	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
-
-	if (!forwardTexture.loadFromFile(ASSETS + SPRITES + "PlayerForward.png"))
-		return EXIT_FAILURE;
-
-	if (!backwardsTexture.loadFromFile(ASSETS + SPRITES + "PlayerBackward.png"))
-		return EXIT_FAILURE;
-
-	// Define the player sprite and assign the player texture
-	sf::Sprite playerSprite(playerTexture);
-
-	// Place the player in the center of the screen
-	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
-	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
-	playerSprite.setScale(0.3f, 0.3f);
-
-	//Create one bullet
-	sf::CircleShape bullet;
-
-	// Declare asteroid texture.
-	sf::Texture astrTexture;
+	playerSprite.setTexture(playerTexture);
 
 	// Load the asteroid texture
 	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
 		return EXIT_FAILURE;
 
-	// Create BG Texture
-	sf::Texture backGroundTexture;
 	// Load BG Texture
+	sf::Sprite bgSprite;
 	if (!backGroundTexture.loadFromFile(ASSETS + SPRITES + "Background.png"))
 		return EXIT_FAILURE;
-	// Load BG Sprite
-	sf::Sprite bgSprite(backGroundTexture);
+	bgSprite.setTexture(backGroundTexture);
 
 	// Set BG position
 	bgSprite.setOrigin(backGroundTexture.getSize().x / 2, backGroundTexture.getSize().y / 2);
 	bgSprite.setPosition(ScreenX / 2, ScreenY / 2);
+
+	// Set Player position
+	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
+	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
+	playerSprite.setScale(0.3f, 0.3f);
+
+	// Create a bullet
+	sf::CircleShape newBullet;
 
 	// Create a graphical text to display
 	sf::Font font;
@@ -160,12 +156,10 @@ int main()
 					if (event.key.code == sf::Keyboard::Space)
 						state = GameState::Game;
 				}
+			}
 
-				if (event.mouseButton.button == sf::Mouse::Left)
-				{
-					bullet.setFillColor(sf::Color::White);
-					bullet.setRadius(5.0f);
-				}
+			else if (state == GameState::Game)
+			{
 			}
 		}
 
@@ -220,6 +214,15 @@ int main()
 			state = GameState::End;
 		}
 
+		if (event.mouseButton.button == sf::Mouse::Left)
+		{
+			std::cout << "Pew Pew" << std::endl;
+			newBullet.setRadius(15);
+			newBullet.setFillColor(sf::Color::Green);
+			newBullet.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y);
+			newBullet.setRotation(rotation);
+		}
+
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
@@ -229,24 +232,13 @@ int main()
 		timer += dt;
 		if (timer >= timerTime)
 		{
-			timer = 0.f;
-			if (asteroids.size() < MAX_ASTEROIDS)
-			{
-				// Create a new Asteroid every 1.5 secs
-				AsteroidClass newAsteroid;
-
-				// Set the texture of the asteroid
-				newAsteroid.shape.setTexture(&astrTexture);
-
-				// Add asteroid to the asteroids vector
-				asteroids.push_back(newAsteroid);
-				// Debug
-				std::cout << "Spawned " << asteroids.size() << std::endl;
-			}
+			ManageAsteroids();
 		}
 
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
+
+		// Move Bullet
 
 		// Update objects in the asteroid vector
 		for (uint i = 0; i < asteroids.size(); i++)
@@ -283,6 +275,8 @@ int main()
 				window.clear();
 				//Draw BG
 				window.draw(bgSprite);
+				// Draw the bullet
+				window.draw(newBullet);
 				// Draw the player
 				window.draw(playerSprite);
 				// Draw asteroids
@@ -295,7 +289,8 @@ int main()
 				break;
 		}
 
-		// // Draw player position debug
+		// TEXT DEBUG
+
 		// window.draw(text);
 		// // Draw the mouse position debug
 		// window.draw(mouseDebug);
@@ -306,4 +301,24 @@ int main()
 		window.display();
 	}
 	return EXIT_SUCCESS;
+}
+
+// Spawn & Destroys Asteroids
+void ManageAsteroids()
+{
+	timer = 0.f;
+	if (asteroids.size() < MAX_ASTEROIDS)
+	{
+		// Create a new Asteroid every 1.5 secs
+		AsteroidClass newAsteroid;
+
+		// Set the texture of the asteroid
+		newAsteroid.shape.setTexture(&astrTexture);
+
+		// Add asteroid to the asteroids vector
+		asteroids.push_back(newAsteroid);
+
+		// Debug
+		std::cout << "Spawned " << asteroids.size() << std::endl;
+	}
 }
