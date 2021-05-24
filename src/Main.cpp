@@ -23,6 +23,7 @@ enum GameState
 
 int ScreenX = 800;
 int ScreenY = 800;
+uint MAX_ASTEROIDS = 2;
 
 std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
@@ -229,11 +230,19 @@ int main()
 		if (timer >= timerTime)
 		{
 			timer = 0.f;
-			// Spawn Asteroids every 1.5 secs
-			AsteroidClass newAsteroid;
-			newAsteroid.shape.setTexture(&astrTexture);
-			asteroids.push_back(newAsteroid);
-			std::cout << "Spawn" << std::endl;
+			if (asteroids.size() < MAX_ASTEROIDS)
+			{
+				// Create a new Asteroid every 1.5 secs
+				AsteroidClass newAsteroid;
+
+				// Set the texture of the asteroid
+				newAsteroid.shape.setTexture(&astrTexture);
+
+				// Add asteroid to the asteroids vector
+				asteroids.push_back(newAsteroid);
+				// Debug
+				std::cout << "Spawned " << asteroids.size() << std::endl;
+			}
 		}
 
 		// Move player
