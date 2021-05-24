@@ -227,7 +227,8 @@ int main()
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
 
-		// Move the bullets
+		// Update Asteroid
+		myAsteroid.Update(dt);
 
 		// Set player rotation to that of the mouses rotation
 		playerSprite.setRotation(rotation - 90);
@@ -261,7 +262,7 @@ int main()
 				// Draw the player
 				window.draw(playerSprite);
 				//Draw the asteroid
-				window.draw(myAsteroid.shape);
+				myAsteroid.Draw(window);
 				break;
 			default:
 				break;
