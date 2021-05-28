@@ -103,9 +103,6 @@ int main()
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
 
-	// Create a bullet
-	sf::CircleShape newBullet;
-
 	// Create a graphical text to display
 	sf::Font font;
 	if (!font.loadFromFile(ASSETS + FONTS + "Teko-Regular.ttf"))
@@ -217,10 +214,6 @@ int main()
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			std::cout << "Pew Pew" << std::endl;
-			newBullet.setRadius(15);
-			newBullet.setFillColor(sf::Color::Green);
-			newBullet.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y);
-			newBullet.setRotation(rotation);
 		}
 
 		// Restart the clock and get the delta time
@@ -276,7 +269,7 @@ int main()
 				//Draw BG
 				window.draw(bgSprite);
 				// Draw the bullet
-				window.draw(newBullet);
+
 				// Draw the player
 				window.draw(playerSprite);
 				// Draw asteroids

@@ -1,0 +1,6 @@
+To do:
+
+- Use mouse as an event so we only get 1 call of the shoot per mouse click
+- Create bullet class
+- Abstract player class into a class
+- Research Colission detection
