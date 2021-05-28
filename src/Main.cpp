@@ -1,4 +1,5 @@
 #include <AsteroidClass.hpp>
+#include <BulletClass.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Main.hpp>
@@ -23,7 +24,8 @@ enum GameState
 
 int ScreenX = 800;
 int ScreenY = 800;
-uint MAX_ASTEROIDS = 2;
+const uint MAX_ASTEROIDS = 2;
+const uint MAX_BULLETS = 3;
 
 std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
@@ -63,9 +65,14 @@ sf::Texture astrTexture;
 
 // Asteroid Vector
 std::vector<AsteroidClass> asteroids = {};
-//std::vector bulletVector;
+
+// Bullet Vector
+std::vector<BulletClass> bullets = {};
+
+// Bullet
 
 void ManageAsteroids();
+void PewPew(sf::Sprite sprite);
 
 int main()
 {
@@ -143,6 +150,7 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 
+			// MENU
 			if (state == GameState::Menu)
 			{
 				if (event.type == sf::Event::KeyPressed)
@@ -154,9 +162,20 @@ int main()
 						state = GameState::Game;
 				}
 			}
-
+			// GAME
 			else if (state == GameState::Game)
 			{
+				// Mouse Down
+				if (event.type == sf::Event::MouseButtonPressed)
+				{
+					// Left Mouse Pressed
+					if (event.mouseButton.button == sf::Mouse::Left)
+					{
+						printf("Pew");
+						BulletClass bullet(playerSprite);
+						bullets.push_back(bullet);
+					}
+				}
 			}
 		}
 
@@ -211,11 +230,6 @@ int main()
 			state = GameState::End;
 		}
 
-		if (event.mouseButton.button == sf::Mouse::Left)
-		{
-			std::cout << "Pew Pew" << std::endl;
-		}
-
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
@@ -231,8 +245,11 @@ int main()
 		// Move player
 		playerSprite.setPosition(ship.x, ship.y);
 
-		// Move Bullet
-
+		// Update Bullet
+		for (uint i = 0; i < bullets.size(); i++)
+		{
+			bullets[i].Update(dt);
+		}
 		// Update objects in the asteroid vector
 		for (uint i = 0; i < asteroids.size(); i++)
 		{
@@ -268,10 +285,13 @@ int main()
 				window.clear();
 				//Draw BG
 				window.draw(bgSprite);
-				// Draw the bullet
-
 				// Draw the player
 				window.draw(playerSprite);
+				// Draw bullets
+				for (uint i = 0; i < bullets.size(); i++)
+				{
+					bullets[i].Draw(window);
+				}
 				// Draw asteroids
 				for (uint i = 0; i < asteroids.size(); i++)
 				{
@@ -313,5 +333,17 @@ void ManageAsteroids()
 
 		// Debug
 		std::cout << "Spawned " << asteroids.size() << std::endl;
+	}
+}
+
+void PewPew(sf::Sprite sprite)
+{
+	if (bullets.size() < MAX_BULLETS)
+	{
+		BulletClass newBullet(sprite);
+		// Add the new bullet to the bullets vector for drawing
+		bullets.push_back(newBullet);
+
+		std::cout << "Bullets: " << bullets.size() << '\n';
 	}
 }
