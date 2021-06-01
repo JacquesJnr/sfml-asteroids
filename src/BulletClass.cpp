@@ -1,15 +1,26 @@
 #include "BulletClass.hpp"
 
-BulletClass::BulletClass(sf::Sprite playerSprite)
+BulletClass::BulletClass(sf::Sprite playerSprite, float& rotation)
 {
 	// Initialize Bullet
 
 	// Set the bullets position to the postition of the player
 	shape.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y);
 	shape.setRadius(radius);
-	shape.setOrigin(radius / 2, radius / 2);
+	shape.setOrigin(shape.getRadius() / 2, shape.getRadius() / 2);
 	shape.setFillColor(sf::Color::Magenta);
-	shape.setRotation(playerSprite.getRotation());
+	//shape.setRotation(playerSprite.getRotation() - 180);
+
+	// Set the vector of the bullet
+
+	if (rotation > 0)
+	{
+		bulletVelocity = sf::Vector2f(sin(rotation) * speed, 0);
+	}
+	else
+	{
+		bulletVelocity = sf::Vector2f(sin(rotation) * speed, 0);
+	}
 }
 void BulletClass::Draw(sf::RenderWindow& window)
 {
@@ -17,6 +28,5 @@ void BulletClass::Draw(sf::RenderWindow& window)
 }
 void BulletClass::Update(float& dt)
 {
-	sf::Vector2f velocity = sf::Vector2f(speed * dt, speed * dt);
-	shape.move(velocity);
+	shape.move(bulletVelocity * dt);
 }

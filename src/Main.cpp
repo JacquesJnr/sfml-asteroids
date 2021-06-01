@@ -39,6 +39,9 @@ bool left;
 bool right;
 bool down;
 
+// Player rotation
+float playerRot;
+
 // Delta time
 float dt = 0;
 float thrustSpeed = 200.0f;
@@ -72,7 +75,7 @@ std::vector<BulletClass> bullets = {};
 // Bullet
 
 void ManageAsteroids();
-void PewPew(sf::Sprite sprite);
+void PewPew(sf::Sprite sprite, float rotation);
 
 int main()
 {
@@ -171,9 +174,8 @@ int main()
 					// Left Mouse Pressed
 					if (event.mouseButton.button == sf::Mouse::Left)
 					{
-						printf("Pew");
-						BulletClass bullet(playerSprite);
-						bullets.push_back(bullet);
+						// Instantiate a bullet
+						PewPew(playerSprite, playerRot);
 					}
 				}
 			}
@@ -189,10 +191,11 @@ int main()
 		// Get rotation of mouse relative to player
 		float dx = playerSprite.getPosition().x - mousePosition.x;
 		float dy = playerSprite.getPosition().y - mousePosition.y;
-		float rotation = (atan2(dy, dx)) * 180 / PI;
+
+		playerRot = (atan2(dy, dx)) * 180 / PI;
 
 		// Set rotation string to current player rotation
-		playerRotation.setString("Player Rotation: " + std::to_string(rotation));
+		playerRotation.setString("Player Rotation: " + std::to_string(playerRot));
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -257,7 +260,7 @@ int main()
 		}
 
 		// Set player rotation to that of the mouses rotation
-		playerSprite.setRotation(rotation - 90);
+		playerSprite.setRotation(playerRot - 90);
 
 		// Screen Wrapping!
 		// Wrap left & right
@@ -304,11 +307,11 @@ int main()
 
 		// TEXT DEBUG
 
-		// window.draw(text);
-		// // Draw the mouse position debug
-		// window.draw(mouseDebug);
-		// // Draw rotation debug
-		// window.draw(playerRotation);
+		window.draw(text);
+		// Draw the mouse position debug
+		window.draw(mouseDebug);
+		// Draw rotation debug
+		window.draw(playerRotation);
 
 		// Update the window
 		window.display();
@@ -336,14 +339,13 @@ void ManageAsteroids()
 	}
 }
 
-void PewPew(sf::Sprite sprite)
+// Instantiates a bullet object at the players position
+void PewPew(sf::Sprite sprite, float rotation)
 {
-	if (bullets.size() < MAX_BULLETS)
-	{
-		BulletClass newBullet(sprite);
-		// Add the new bullet to the bullets vector for drawing
-		bullets.push_back(newBullet);
+	BulletClass newBullet(sprite, rotation);
+	// Add the new bullet to the bullets vector for drawing
+	bullets.push_back(newBullet);
 
-		std::cout << "Bullets: " << bullets.size() << '\n';
-	}
+	// Debug
+	std::cout << "Bullets: " << bullets.size() << '\n';
 }

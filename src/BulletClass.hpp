@@ -5,7 +5,7 @@
 class BulletClass
 {
 public:
-	BulletClass(sf::Sprite playerSprite);
+	BulletClass(sf::Sprite playerSprite, float& rotation);
 	void Draw(sf::RenderWindow& window);
 	void Update(float& dt);
 
@@ -13,6 +13,7 @@ public:
 	sf::Vector2f position = sf::Vector2f(shape.getPosition().x, shape.getPosition().y);
 
 	//  Keep this a float incase we want to resize bullets
+	sf::Vector2f bulletVelocity;
 	float radius = 10;
 	float speed = 80.0f;
 };
