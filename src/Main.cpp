@@ -73,6 +73,7 @@ std::vector<AsteroidClass> asteroids = {};
 std::vector<BulletClass> bullets = {};
 
 // Bullet
+bool hasShot = false;
 
 void ManageAsteroids();
 void PewPew(sf::Sprite sprite, float rotation);
@@ -233,6 +234,9 @@ int main()
 			state = GameState::End;
 		}
 
+		// Set player rotation to that of the mouses rotation
+		playerSprite.setRotation(playerRot - 90);
+
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
@@ -258,9 +262,6 @@ int main()
 		{
 			asteroids[i].Update(dt);
 		}
-
-		// Set player rotation to that of the mouses rotation
-		playerSprite.setRotation(playerRot - 90);
 
 		// Screen Wrapping!
 		// Wrap left & right
@@ -343,9 +344,10 @@ void ManageAsteroids()
 void PewPew(sf::Sprite sprite, float rotation)
 {
 	BulletClass newBullet(sprite, rotation);
+
 	// Add the new bullet to the bullets vector for drawing
 	bullets.push_back(newBullet);
 
 	// Debug
-	std::cout << "Bullets: " << bullets.size() << '\n';
+	//std::cout << "Bullets: " << bullets.size() << '\n';
 }

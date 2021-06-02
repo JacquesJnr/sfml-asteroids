@@ -9,17 +9,16 @@ BulletClass::BulletClass(sf::Sprite playerSprite, float& rotation)
 	shape.setRadius(radius);
 	shape.setOrigin(shape.getRadius() / 2, shape.getRadius() / 2);
 	shape.setFillColor(sf::Color::Magenta);
-	//shape.setRotation(playerSprite.getRotation() - 180);
+	shape.setRotation(0);
 
 	// Set the vector of the bullet
-
-	if (rotation > 0)
+	if (rotation > 0) // 0 to 180 degrees
 	{
-		bulletVelocity = sf::Vector2f(sin(rotation) * speed, 0);
+		bulletVelocity = sf::Vector2f(cos(rotation) * speed, sin(rotation) * -speed);
 	}
-	else
+	else // -0 to - 180 dgerees
 	{
-		bulletVelocity = sf::Vector2f(sin(rotation) * speed, 0);
+		bulletVelocity = sf::Vector2f(cos(rotation) * -speed, sin(rotation) * speed);
 	}
 }
 void BulletClass::Draw(sf::RenderWindow& window)
