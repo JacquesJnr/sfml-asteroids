@@ -63,8 +63,11 @@ GameState state;
 // Create Main Menu Texture
 sf::Texture mainMenuTexture;
 
-// Create BG Texture
+// Create game bacckground Texture
 sf::Texture backGroundTexture;
+
+// Create Game Over texture
+sf::Texture gameOverTexture;
 
 // Craete Player texture.
 sf::Texture playerTexture;
@@ -104,6 +107,18 @@ int main()
 		return EXIT_FAILURE;
 	mainMenu.setTexture(mainMenuTexture);
 
+	// Load Game Background Texture
+	sf::Sprite bgSprite;
+	if (!backGroundTexture.loadFromFile(ASSETS + SPRITES + "Background.png"))
+		return EXIT_FAILURE;
+	bgSprite.setTexture(backGroundTexture);
+
+	// Load Game Over Background Texture
+	sf::Sprite gameOverBg;
+	if (!gameOverTexture.loadFromFile(ASSETS + SPRITES + "Game Over.png"))
+		return EXIT_FAILURE;
+	gameOverBg.setTexture(gameOverTexture);
+
 	// Load Player Texture
 	sf::Sprite playerSprite;
 	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
@@ -119,12 +134,6 @@ int main()
 		return EXIT_FAILURE;
 	if (!smallAsteroid.loadFromFile(ASSETS + SPRITES + "Asteroid Yellow.png"))
 		return EXIT_FAILURE;
-
-	// Load BG Texture
-	sf::Sprite bgSprite;
-	if (!backGroundTexture.loadFromFile(ASSETS + SPRITES + "Background.png"))
-		return EXIT_FAILURE;
-	bgSprite.setTexture(backGroundTexture);
 
 	// Set BG position
 	bgSprite.setOrigin(backGroundTexture.getSize().x / 2, backGroundTexture.getSize().y / 2);
@@ -254,8 +263,19 @@ int main()
 					}
 				}
 			}
+			// GAME OVER
 			else
 			{
+				if (event.type == sf::Event::KeyPressed)
+				{
+					if (event.key.code == sf::Keyboard::Escape)
+						window.close();
+
+					if (event.key.code == sf::Keyboard::Space)
+					{
+						state = GameState::Menu;
+					}
+				}
 			}
 		}
 
@@ -388,6 +408,10 @@ int main()
 				{
 					asteroids[i].Draw(window);
 				}
+				break;
+			case GameState::End:
+				window.clear();
+				window.draw(gameOverBg);
 				break;
 			default:
 				break;
