@@ -69,8 +69,10 @@ sf::Texture backGroundTexture;
 // Craete Player texture.
 sf::Texture playerTexture;
 
-// Create asteroid texture.
-sf::Texture astrTexture;
+// Create asteroid textures
+sf::Texture bigAsteroid;
+sf::Texture medAsteroid;
+sf::Texture smallAsteroid;
 
 // Asteroid Vector
 std::vector<AsteroidClass> asteroids = {};
@@ -106,10 +108,16 @@ int main()
 	sf::Sprite playerSprite;
 	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
+
+	// Apply a texture to the player sprite
 	playerSprite.setTexture(playerTexture);
 
-	// Load the asteroid texture
-	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
+	// Load the asteroid textures
+	if (!bigAsteroid.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
+		return EXIT_FAILURE;
+	if (!medAsteroid.loadFromFile(ASSETS + SPRITES + "Asteroid Blue.png"))
+		return EXIT_FAILURE;
+	if (!smallAsteroid.loadFromFile(ASSETS + SPRITES + "Asteroid Yellow.png"))
 		return EXIT_FAILURE;
 
 	// Load BG Texture
@@ -137,6 +145,15 @@ int main()
 	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
 	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
 	playerSprite.setScale(0.3f, 0.3f);
+
+	//---------MUSIC---------
+
+	sf::Music music;
+
+	if (!music.openFromFile(ASSETS + AUDIO + "8bitPresentation-David_Fesliyan.wav"))
+		return EXIT_FAILURE;
+
+	music.play();
 
 	//----------PLAYER----------
 
@@ -236,6 +253,9 @@ int main()
 						PewPew(playerSprite, dx, dy);
 					}
 				}
+			}
+			else
+			{
 			}
 		}
 
@@ -397,13 +417,13 @@ void ManageAsteroids()
 		AsteroidClass newAsteroid;
 
 		// Set the texture of the asteroid
-		newAsteroid.shape.setTexture(&astrTexture);
+		newAsteroid.shape.setTexture(&bigAsteroid);
 
 		// Add asteroid to the asteroids vector
 		asteroids.push_back(newAsteroid);
 
 		// Debug
-		std::cout << "Spawned " << asteroids.size() << std::endl;
+		std::cout << "Spawned " << asteroids.size() << " asteroids" << std::endl;
 	}
 }
 
@@ -416,5 +436,5 @@ void PewPew(sf::Sprite sprite, float x, float y)
 	bullets.push_back(newBullet);
 
 	// Debug
-	std::cout << "Bullets: " << bullets.size() << '\n';
+	//std::cout << "Bullets: " << bullets.size() << '\n';
 }

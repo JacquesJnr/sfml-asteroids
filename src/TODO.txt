@@ -5,10 +5,10 @@ PRODUCTION:
 - Game Over Screen ✅
 - Shooting sound ✅
 
-- Asteroid exploding sound
-- Losing life sound
-- Smaller asteroid pngs
-- Player Movement sound
+- Asteroid exploding sound ✅
+- Losing life sound ✅
+- Smaller asteroid pngs ✅
+- Player Movement sound ✅
 
 CODE:
 - Display Score ✅
