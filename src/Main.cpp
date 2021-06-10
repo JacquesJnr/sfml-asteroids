@@ -9,6 +9,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Window/Mouse.hpp>
 
+#include <bits/stdc++.h>
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -44,8 +45,8 @@ float playerRot;
 
 // Delta time
 float dt = 0;
-float thrustSpeed = 200.0f;
-float dragCoefficient = 30.f;
+float thrustSpeedX = 0;
+float thrustSpeedY = 0;
 float fraction;
 
 // Spawn timer
@@ -76,7 +77,7 @@ std::vector<BulletClass> bullets = {};
 bool hasShot = false;
 
 void ManageAsteroids();
-void PewPew(sf::Sprite sprite, float rotation);
+void PewPew(sf::Sprite sprite, float x, float y);
 
 int main()
 {
@@ -94,6 +95,9 @@ int main()
 	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
 	playerSprite.setTexture(playerTexture);
+
+	// Offset for player sprite - I use this this compensate for the sprite being miss alligned with the horizontal.
+	int spriteOffset = 90;
 
 	// Load the asteroid texture
 	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
@@ -146,6 +150,16 @@ int main()
 	// Open game window
 	while (window.isOpen())
 	{
+		// Set mousePosition vector to mouse coords
+		mousePosition = mouse.getPosition(window);
+		mouseDebug.setString("Mouse X: " + std::to_string(mousePosition.x) + " Mouse Y: " + std::to_string(mousePosition.y));
+
+		// Get rotation of mouse relative to player
+		float dx = playerSprite.getPosition().x - mousePosition.x;
+		float dy = playerSprite.getPosition().y - mousePosition.y;
+
+		playerRot = (atan2(dy, dx)) * 180 / PI;
+
 		// Process events
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -176,7 +190,7 @@ int main()
 					if (event.mouseButton.button == sf::Mouse::Left)
 					{
 						// Instantiate a bullet
-						PewPew(playerSprite, playerRot);
+						PewPew(playerSprite, dx, dy);
 					}
 				}
 			}
@@ -185,38 +199,31 @@ int main()
 		// Set Debug coordinate string
 		text.setString("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y));
 
-		// Set mousePosition vector to mouse coords
-		mousePosition = mouse.getPosition(window);
-		mouseDebug.setString("Mouse X: " + std::to_string(mousePosition.x) + " Mouse Y: " + std::to_string(mousePosition.y));
-
-		// Get rotation of mouse relative to player
-		float dx = playerSprite.getPosition().x - mousePosition.x;
-		float dy = playerSprite.getPosition().y - mousePosition.y;
-
-		playerRot = (atan2(dy, dx)) * 180 / PI;
-
 		// Set rotation string to current player rotation
 		playerRotation.setString("Player Rotation: " + std::to_string(playerRot));
 
+		const float kForce = 0.1;
+
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		{
-			ship.y -= thrustSpeed * dt;
-		}
+			thrustSpeedY -= kForce;
 
 		// Check for downwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-			ship.y += thrustSpeed * dt;
-		}
+			thrustSpeedY += kForce;
 
 		//Check for left input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			ship.x -= thrustSpeed * dt;
+			thrustSpeedX -= kForce;
 
 		//Check for right input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			ship.x += thrustSpeed * dt;
+			thrustSpeedX += kForce;
+
+		thrustSpeedX *= 0.9998f;
+		thrustSpeedY *= 0.9998f;
+		ship.x += thrustSpeedX * dt;
+		ship.y += thrustSpeedY * dt;
 
 		// ENUM STATES
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -235,12 +242,11 @@ int main()
 		}
 
 		// Set player rotation to that of the mouses rotation
-		playerSprite.setRotation(playerRot - 90);
+		playerSprite.setRotation(playerRot - spriteOffset);
 
 		// Restart the clock and get the delta time
 		time = clock.restart();
 		dt = time.asSeconds();
-		fraction = dragCoefficient * dt;
 
 		// Run spawn timer
 		timer += dt;
@@ -256,6 +262,11 @@ int main()
 		for (uint i = 0; i < bullets.size(); i++)
 		{
 			bullets[i].Update(dt);
+			if (bullets.size() > 4)
+			{
+				printf("Kill");
+				bullets.erase(bullets.begin() + 0);
+			}
 		}
 		// Update objects in the asteroid vector
 		for (uint i = 0; i < asteroids.size(); i++)
@@ -308,11 +319,11 @@ int main()
 
 		// TEXT DEBUG
 
-		window.draw(text);
-		// Draw the mouse position debug
-		window.draw(mouseDebug);
-		// Draw rotation debug
-		window.draw(playerRotation);
+		// window.draw(text);
+		// // Draw the mouse position debug
+		// window.draw(mouseDebug);
+		// // Draw rotation debug
+		// window.draw(playerRotation);
 
 		// Update the window
 		window.display();
@@ -341,13 +352,13 @@ void ManageAsteroids()
 }
 
 // Instantiates a bullet object at the players position
-void PewPew(sf::Sprite sprite, float rotation)
+void PewPew(sf::Sprite sprite, float x, float y)
 {
-	BulletClass newBullet(sprite, rotation);
+	BulletClass newBullet(sprite, x, y);
 
 	// Add the new bullet to the bullets vector for drawing
 	bullets.push_back(newBullet);
 
 	// Debug
-	//std::cout << "Bullets: " << bullets.size() << '\n';
+	std::cout << "Bullets: " << bullets.size() << '\n';
 }

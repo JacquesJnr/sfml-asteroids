@@ -4,7 +4,6 @@ To do:
 - Create bullet class ✅
 - Make bullet Vector ✅
 - Bullet Update function ✅
-- Bullets move in the direcrion the player was facing on shoot
-- Make Bullets Wrap
+- Bullets move in the direcrion the player was facing on shoot ✅
+- Make Bullets Wrap ✅
 - Abstract player class into a class
-- Research Colission detection
