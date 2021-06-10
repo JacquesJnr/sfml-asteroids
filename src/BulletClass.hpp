@@ -19,6 +19,6 @@ public:
 	// The player speed is negative because
 	float speed = 250.0f;
 	sf::Clock timer;
-	const float lifetime = 5;
+	//const float lifetime = 5;
 };
 #endif

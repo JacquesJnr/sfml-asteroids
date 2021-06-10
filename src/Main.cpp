@@ -31,14 +31,19 @@ const uint MAX_BULLETS = 3;
 std::string ASSETS = "content/";
 std::string SPRITES = "sprites/";
 std::string FONTS = "fonts/";
+std::string AUDIO = "audio/";
 
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
 
+//
 bool up;
 bool left;
 bool right;
 bool down;
+
+//Pi
+const float PI = 3.14159265;
 
 // Player rotation
 float playerRot;
@@ -81,8 +86,15 @@ void PewPew(sf::Sprite sprite, float x, float y);
 
 int main()
 {
+	//----------WINDOW----------
+
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
+
+	//----------TEXTURES & SPRITES----------
+
+	// Offset for player sprite - I use this this compensate for the sprite being miss alligned with the horizontal.
+	int spriteOffset = 90;
 
 	// Load Main Menu Texture
 	sf::Sprite mainMenu;
@@ -95,9 +107,6 @@ int main()
 	if (!playerTexture.loadFromFile(ASSETS + SPRITES + "Player.png"))
 		return EXIT_FAILURE;
 	playerSprite.setTexture(playerTexture);
-
-	// Offset for player sprite - I use this this compensate for the sprite being miss alligned with the horizontal.
-	int spriteOffset = 90;
 
 	// Load the asteroid texture
 	if (!astrTexture.loadFromFile(ASSETS + SPRITES + "Asteroid Red.png"))
@@ -113,12 +122,9 @@ int main()
 	bgSprite.setOrigin(backGroundTexture.getSize().x / 2, backGroundTexture.getSize().y / 2);
 	bgSprite.setPosition(ScreenX / 2, ScreenY / 2);
 
-	// Set Player position
-	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
-	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
-	playerSprite.setScale(0.3f, 0.3f);
+	//----------FONT----------
 
-	// Create a graphical text to display
+	// Load Font - true type font
 	sf::Font font;
 	if (!font.loadFromFile(ASSETS + FONTS + "Teko-Regular.ttf"))
 		return EXIT_FAILURE;
@@ -126,6 +132,13 @@ int main()
 	// Delta time clock and time signature.
 	sf::Clock clock;
 	sf::Time time;
+
+	// Set Player position
+	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
+	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
+	playerSprite.setScale(0.3f, 0.3f);
+
+	//----------PLAYER----------
 
 	// Player Position.
 	sf::Vector2f ship(400, 400);
@@ -135,17 +148,47 @@ int main()
 	playerRotation.setPosition(0, 40);
 	playerRotation.setFillColor(sf::Color(255, 255, 0, 255));
 
+	// Debug Player Position.
+	sf::Text text("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y), font, 20);
+
+	//----------MOUSE----------
+
 	// Mouse Position Debug.
 	sf::Mouse mouse;
 	sf::Vector2i mousePosition;
 	sf::Text mouseDebug("Mouse X: 0  Mouse Y: 0", font, 20);
 	mouseDebug.setPosition(0, 20);
 
-	//Pi
-	const float PI = 3.14159265;
+	//----------SCORE----------
 
-	// Debug Player Position.
-	sf::Text text("Player X: " + std::to_string(ship.x) + " Player Y: " + std::to_string(ship.y), font, 20);
+	// UI rectangle properties
+	sf::RectangleShape uiBox;
+	uiBox.setSize(sf::Vector2f(210, 75));
+	uiBox.setFillColor(sf::Color::Blue);
+	uiBox.setOutlineColor(sf::Color::White);
+	uiBox.setOutlineThickness(1.5f);
+
+	// "Score:" text
+	sf::Text scoreText("Score: ", font, 32);
+
+	// Score Number Text
+	sf::Text scoreDisplay("0", font, 32);
+
+	scoreText.setPosition(590, 20);
+	scoreText.setFillColor(sf::Color::White);
+	scoreText.setOutlineThickness(2.0f);
+
+	scoreDisplay.setPosition(690, 20);
+	scoreDisplay.setFillColor(sf::Color::White);
+
+	uiBox.setPosition(580, 20);
+
+	//----------LIVES----------
+
+	sf::Text livesText("Lives: ", font, 32);
+	livesText.setPosition(590, 50);
+	livesText.setFillColor(sf::Color::White);
+	livesText.setOutlineThickness(2.0f);
 
 	// Open game window
 	while (window.isOpen())
@@ -262,9 +305,11 @@ int main()
 		for (uint i = 0; i < bullets.size(); i++)
 		{
 			bullets[i].Update(dt);
+
+			// Limit bullet count to 5
 			if (bullets.size() > 4)
 			{
-				printf("Kill");
+				// Destroy the 'oldest' bullet
 				bullets.erase(bullets.begin() + 0);
 			}
 		}
@@ -298,10 +343,21 @@ int main()
 			case GameState::Game:
 				// Clear screen
 				window.clear();
+
 				//Draw BG
 				window.draw(bgSprite);
+
 				// Draw the player
 				window.draw(playerSprite);
+
+				// Score
+				window.draw(uiBox);
+				window.draw(scoreText);
+				window.draw(scoreDisplay);
+
+				//Lives
+				window.draw(livesText);
+
 				// Draw bullets
 				for (uint i = 0; i < bullets.size(); i++)
 				{
