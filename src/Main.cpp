@@ -25,7 +25,7 @@ enum GameState
 
 int ScreenX = 800;
 int ScreenY = 800;
-const uint MAX_ASTEROIDS = 2;
+const uint MAX_ASTEROIDS = 10;
 const uint MAX_BULLETS = 3;
 
 std::string ASSETS = "content/";
@@ -86,6 +86,7 @@ std::vector<BulletClass> bullets = {};
 // Bullet
 bool hasShot = false;
 
+void Start(sf::Sprite player);
 void ManageAsteroids();
 void PewPew(sf::Sprite sprite, float x, float y);
 
@@ -95,6 +96,7 @@ int main()
 
 	// Create the main window
 	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "Asteroids");
+	window.setFramerateLimit(144);
 
 	//----------TEXTURES & SPRITES----------
 
@@ -150,11 +152,6 @@ int main()
 	sf::Clock clock;
 	sf::Time time;
 
-	// Set Player position
-	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
-	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
-	playerSprite.setScale(0.3f, 0.3f);
-
 	//---------MUSIC---------
 
 	sf::Music music;
@@ -166,7 +163,12 @@ int main()
 
 	//----------PLAYER----------
 
-	// Player Position.
+	// Set Player position
+	playerSprite.setOrigin(playerTexture.getSize().x / 2, playerTexture.getSize().y / 2);
+	playerSprite.setPosition(ScreenX / 2, ScreenY / 2);
+	playerSprite.setScale(0.3f, 0.3f);
+
+	// Player Position for debug.
 	sf::Vector2f ship(400, 400);
 
 	// Player Rotation
@@ -240,6 +242,9 @@ int main()
 			// MENU
 			if (state == GameState::Menu)
 			{
+				Start(playerSprite);
+				ship.x = 400;
+				ship.y = 400;
 				if (event.type == sf::Event::KeyPressed)
 				{
 					if (event.key.code == sf::Keyboard::Escape)
@@ -275,6 +280,8 @@ int main()
 					{
 						state = GameState::Menu;
 					}
+					if (music.getStatus() == music.Stopped)
+						music.play();
 				}
 			}
 		}
@@ -285,7 +292,7 @@ int main()
 		// Set rotation string to current player rotation
 		playerRotation.setString("Player Rotation: " + std::to_string(playerRot));
 
-		const float kForce = 0.1;
+		const float kForce = 3.5;
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -303,8 +310,8 @@ int main()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			thrustSpeedX += kForce;
 
-		thrustSpeedX *= 0.9998f;
-		thrustSpeedY *= 0.9998f;
+		thrustSpeedX *= 0.998f;
+		thrustSpeedY *= 0.998f;
 		ship.x += thrustSpeedX * dt;
 		ship.y += thrustSpeedY * dt;
 
@@ -350,7 +357,17 @@ int main()
 			if (bullets.size() > 4)
 			{
 				// Destroy the 'oldest' bullet
-				bullets.erase(bullets.begin() + 0);
+				//bullets.erase(bullets.begin() + 0);
+			}
+		}
+		for (uint i = 0; i < asteroids.size(); i++)
+		{
+			for (uint j = i + 1; j < asteroids.size(); j++)
+			{
+				if (j != i)
+				{
+					asteroids[i].CollisionUpdate(asteroids[j]);
+				}
 			}
 		}
 		// Update objects in the asteroid vector
@@ -412,6 +429,7 @@ int main()
 			case GameState::End:
 				window.clear();
 				window.draw(gameOverBg);
+				music.stop();
 				break;
 			default:
 				break;
@@ -429,6 +447,14 @@ int main()
 		window.display();
 	}
 	return EXIT_SUCCESS;
+}
+
+// Initialise the game with the player in the center and no asteroids or bullets
+void Start(sf::Sprite player)
+{
+	player.setPosition(ScreenX / 2, ScreenY / 2);
+	bullets.clear();
+	asteroids.clear();
 }
 
 // Spawn & Destroys Asteroids
