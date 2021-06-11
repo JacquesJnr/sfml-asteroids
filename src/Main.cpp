@@ -36,17 +36,15 @@ std::string AUDIO = "audio/";
 std::stringstream playerCoordsX;
 std::stringstream playerCoordsY;
 
-//
-bool up;
-bool left;
-bool right;
-bool down;
-
 //Pi
 const float PI = 3.14159265;
 
 // Player rotation
 float playerRot;
+
+//SCORE
+int score = 0;
+int hitCount = 0;
 
 // Delta time
 float dt = 0;
@@ -57,6 +55,12 @@ float fraction;
 // Spawn timer
 const float timerTime = 1.5f;
 float timer = 0;
+
+// Game Timer
+sf::Clock gameClock;
+const float gameTime = 30;
+sf::Text timerText;
+sf::Text timerDisplay;
 
 GameState state;
 
@@ -182,6 +186,12 @@ int main()
 	sf::Sound playSound;
 	playSound.setBuffer(startGameBuffer);
 
+	sf::SoundBuffer explodeBuffer;
+	if (!explodeBuffer.loadFromFile(ASSETS + AUDIO + "asteroidexplosion1.wav"))
+		return EXIT_FAILURE;
+	sf::Sound explodeSound;
+	explodeSound.setBuffer(explodeBuffer);
+
 	//----------PLAYER----------
 
 	// Set Player position
@@ -239,6 +249,41 @@ int main()
 	livesText.setFillColor(sf::Color::White);
 	livesText.setOutlineThickness(2.0f);
 
+	// Lives positions
+	sf::Vector2f livePos1(660, 50);
+	sf::Vector2f livePos2(700, 50);
+	sf::Vector2f livePos3(740, 50);
+
+	sf::Sprite live1, live2, live3;
+	live1.setTexture(playerTexture);
+	live1.setScale(0.15f, 0.15f);
+	live1.setPosition(livePos1);
+	live2.setTexture(playerTexture);
+	live2.setScale(0.15f, 0.15f);
+	live2.setPosition(livePos2);
+	live3.setTexture(playerTexture);
+	live3.setScale(0.15f, 0.15f);
+	live3.setPosition(livePos3);
+
+	//----------TIMER---------
+	gameClock.restart();
+
+	timerText.setString("Time: ");
+	timerText.setFont(font);
+	timerText.setPosition(350, 20);
+	timerText.setFillColor(sf::Color::Black);
+
+	timerDisplay.setFont(font);
+	timerDisplay.setPosition(420, 20);
+	timerDisplay.setFillColor(sf::Color::Black);
+
+	sf::RectangleShape timerBox;
+	timerBox.setSize(sf::Vector2f(200, 75));
+	timerBox.setPosition(340, 20);
+	timerBox.setFillColor(sf::Color::Yellow);
+	timerBox.setOutlineColor(sf::Color::White);
+	timerBox.setOutlineThickness(1.5f);
+
 	// Open game window
 	while (window.isOpen())
 	{
@@ -290,6 +335,14 @@ int main()
 						// Instantiate a bullet
 						PewPew(playerSprite, dx, dy);
 						shootSound.play();
+					}
+
+					if (event.type == sf::Event::KeyPressed)
+					{
+						if (event.key.code == sf::Keyboard::Escape)
+						{
+							state = GameState::Menu;
+						}
 					}
 				}
 			}
@@ -407,7 +460,25 @@ int main()
 				// Destroy the 'oldest' bullet
 				bullets.erase(bullets.begin() + 0);
 			}
+
+			for (uint i = 0; i < bullets.size(); i++)
+			{
+				for (uint j = 0; j < asteroids.size(); j++)
+				{
+					float dx = bullets[i].shape.getPosition().x - asteroids[j].shape.getPosition().x;
+					float dy = bullets[i].shape.getPosition().y - asteroids[j].shape.getPosition().y;
+					float norm = sqrt(dx * dx + dy * dy);
+
+					if (norm < 10 + 50 && !asteroids[j].isHit)
+					{
+						asteroids[j].isHit = true;
+						explodeSound.play();
+						score += 50;
+					}
+				}
+			}
 		}
+
 		for (uint i = 0; i < asteroids.size(); i++)
 		{
 			for (uint j = 0; j < asteroids.size(); j++)
@@ -439,6 +510,15 @@ int main()
 		else if (ship.y >= ScreenY + playerSprite.getScale().y)
 			ship.y = 5; // Set coordinate string
 
+		scoreDisplay.setString(std::to_string(score));
+		timerDisplay.setString(std::to_string(gameTime - gameClock.getElapsedTime().asSeconds()));
+
+		// Check for the timer being < 0
+		if (gameTime - gameClock.getElapsedTime().asSeconds() <= 0)
+		{
+			state = GameState::End;
+		}
+
 		switch (state)
 		{
 			case GameState::Menu:
@@ -462,6 +542,14 @@ int main()
 
 				//Lives
 				window.draw(livesText);
+				window.draw(live1);
+				window.draw(live2);
+				window.draw(live3);
+
+				// Timer
+				window.draw(timerBox);
+				window.draw(timerText);
+				window.draw(timerDisplay);
 
 				// Draw bullets
 				for (uint i = 0; i < bullets.size(); i++)
@@ -469,14 +557,30 @@ int main()
 					bullets[i].Draw(window);
 				}
 				// Draw asteroids
+				hitCount = 0;
 				for (uint i = 0; i < asteroids.size(); i++)
 				{
-					asteroids[i].Draw(window);
+					if (!asteroids[i].isHit)
+					{
+						asteroids[i].Draw(window);
+					}
+
+					if (asteroids[i].isHit)
+					{
+						hitCount++;
+					}
 				}
+				// if (hitCount == MAX_ASTEROIDS)
+				// {
+				// 	Start(playerSprite);
+				// }
 				break;
 			case GameState::End:
 				window.clear();
 				window.draw(gameOverBg);
+				window.draw(uiBox);
+				window.draw(scoreText);
+				window.draw(scoreDisplay);
 				music.stop();
 				break;
 			default:
@@ -497,10 +601,13 @@ int main()
 	return EXIT_SUCCESS;
 }
 
-// Initialise the game with the player in the center and no asteroids or bullets
+// Initialise the game
 void Start(sf::Sprite player)
 {
 	player.setPosition(ScreenX / 2, ScreenY / 2);
+	score = 0;
+	hitCount = 0;
+	gameClock.restart();
 	bullets.clear();
 	asteroids.clear();
 }
@@ -524,6 +631,7 @@ void ManageAsteroids()
 		asteroids.push_back(newAsteroid);
 
 		// Debug
+
 		std::cout << "Spawned " << asteroids.size() << " asteroids" << std::endl;
 	}
 }

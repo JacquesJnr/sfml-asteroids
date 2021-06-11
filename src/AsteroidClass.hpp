@@ -17,6 +17,6 @@ public:
 	float startRadius = 50.0f;
 	int counter;
 	float speed = 50.0f;
-	bool destroyed;
+	bool isHit = false;
 };
 #endif
