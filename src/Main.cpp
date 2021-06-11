@@ -160,6 +160,27 @@ int main()
 		return EXIT_FAILURE;
 
 	music.play();
+	music.setVolume(0.5f);
+
+	//----------SFX------------
+
+	sf::SoundBuffer shootBuffer;
+	if (!shootBuffer.loadFromFile(ASSETS + AUDIO + "shoot.wav"))
+		return EXIT_FAILURE;
+	sf::Sound shootSound;
+	shootSound.setBuffer(shootBuffer);
+
+	sf::SoundBuffer thrustBuffer;
+	if (!thrustBuffer.loadFromFile(ASSETS + AUDIO + "thruster.wav"))
+		return EXIT_FAILURE;
+	sf::Sound thrusterSound;
+	thrusterSound.setBuffer(thrustBuffer);
+
+	sf::SoundBuffer startGameBuffer;
+	if (!startGameBuffer.loadFromFile(ASSETS + AUDIO + "startgame.wav"))
+		return EXIT_FAILURE;
+	sf::Sound playSound;
+	playSound.setBuffer(startGameBuffer);
 
 	//----------PLAYER----------
 
@@ -251,7 +272,10 @@ int main()
 						window.close();
 
 					if (event.key.code == sf::Keyboard::Space)
+					{
 						state = GameState::Game;
+						playSound.play();
+					}
 				}
 			}
 			// GAME
@@ -265,6 +289,7 @@ int main()
 					{
 						// Instantiate a bullet
 						PewPew(playerSprite, dx, dy);
+						shootSound.play();
 					}
 				}
 			}
@@ -296,19 +321,42 @@ int main()
 
 		// Check for upwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		{
 			thrustSpeedY -= kForce;
-
+			if (thrusterSound.getStatus() == thrusterSound.Stopped)
+			{
+				thrusterSound.play();
+			}
+		}
 		// Check for downwards input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		{
 			thrustSpeedY += kForce;
+			if (thrusterSound.getStatus() == thrusterSound.Stopped)
+			{
+				thrusterSound.play();
+			}
+		}
 
 		//Check for left input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
 			thrustSpeedX -= kForce;
+			if (thrusterSound.getStatus() == thrusterSound.Stopped)
+			{
+				thrusterSound.play();
+			}
+		}
 
 		//Check for right input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
 			thrustSpeedX += kForce;
+			if (thrusterSound.getStatus() == thrusterSound.Stopped)
+			{
+				thrusterSound.play();
+			}
+		}
 
 		thrustSpeedX *= 0.998f;
 		thrustSpeedY *= 0.998f;
@@ -357,12 +405,12 @@ int main()
 			if (bullets.size() > 4)
 			{
 				// Destroy the 'oldest' bullet
-				//bullets.erase(bullets.begin() + 0);
+				bullets.erase(bullets.begin() + 0);
 			}
 		}
 		for (uint i = 0; i < asteroids.size(); i++)
 		{
-			for (uint j = i + 1; j < asteroids.size(); j++)
+			for (uint j = 0; j < asteroids.size(); j++)
 			{
 				if (j != i)
 				{
@@ -468,6 +516,9 @@ void ManageAsteroids()
 
 		// Set the texture of the asteroid
 		newAsteroid.shape.setTexture(&bigAsteroid);
+
+		// Set the origin of the asteroid
+		newAsteroid.shape.setOrigin(newAsteroid.shape.getTexture()->getSize().x / 2, newAsteroid.shape.getTexture()->getSize().y / 2);
 
 		// Add asteroid to the asteroids vector
 		asteroids.push_back(newAsteroid);

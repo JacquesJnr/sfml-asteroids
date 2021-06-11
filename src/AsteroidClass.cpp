@@ -1,4 +1,5 @@
 #include "AsteroidClass.hpp"
+#include "BulletClass.hpp"
 
 AsteroidClass::AsteroidClass()
 {
@@ -6,11 +7,12 @@ AsteroidClass::AsteroidClass()
 	std::srand(time(NULL));
 	int randX = rand() % 801;
 	int randY = rand() % 801;
+	counter = 10;
 
 	// Initialize asteroid	velocity = sf::Vector2f(speed * dt, speed * dt);
 	this->shape.setRadius(startRadius);
 	this->shape.setPosition(randX, randY);
-	shape.setRotation(rand() % 360);
+	//shape.setRotation(rand() % 360);
 
 	float norm = sqrt(randX * randX + randY * randY);
 	float signX = randX < 400 ? -1 : 1;
@@ -46,16 +48,14 @@ void AsteroidClass::Update(float& dt)
 
 void AsteroidClass::CollisionUpdate(AsteroidClass& other)
 {
-	static int counter = 10000;
-
 	float dx = other.shape.getPosition().x - shape.getPosition().x;
 	float dy = other.shape.getPosition().y - shape.getPosition().y;
 	float norm = sqrt(dx * dx + dy * dy);
 
-	if (norm < startRadius * 2 && counter == 0)
+	if (norm < startRadius && counter == 0)
 	{
 		velocity = -velocity;
-		counter = 10000;
+		counter = 10;
 	}
 	if (counter != 0)
 	{
@@ -63,6 +63,7 @@ void AsteroidClass::CollisionUpdate(AsteroidClass& other)
 	}
 }
 
-void AsteroidClass::OnHit()
-{
-}
+// void AsteroidClass::OnHit(BulletClass& bullet)
+// {
+// 	(void)bullet;
+// }
